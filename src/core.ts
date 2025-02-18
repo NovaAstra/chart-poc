@@ -57,3 +57,4 @@ export abstract class Plot<O> extends EE {
     this.createG2();
   }
 }
+
