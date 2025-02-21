@@ -1,17 +1,34 @@
 import type { G2Chart } from './chart';
+import type { Options, Spec } from "../type"
 
+import { isArray, mergeWith } from "lodash-es"
 import EE from '@antv/event-emitter';
 import { Chart } from './chart';
 
-export abstract class Plot extends EE {
+export type PickOptions = Options;
+
+const arrayCoverage = (objValue: unknown, srcValue: unknown) => {
+  if (isArray(srcValue)) {
+    return srcValue;
+  }
+};
+
+export const mergeWithArrayCoverage = (...args) => {
+  return mergeWith(...args, arrayCoverage);
+};
+
+
+export abstract class Plot<O> extends EE {
   public chart: G2Chart;
+
+  public readonly options: O;
 
   public readonly container: HTMLElement;
 
-  public constructor(container: string | HTMLElement) {
+  public constructor(container: string | HTMLElement, options: O) {
     super()
-    this.container = typeof container === 'string' ? document.getElementById(container) : container;
-
+    this.container = typeof container === 'string' ? document.getElementById(container)! : container;
+    this.options = this.mergeOption(options);
     this.createG2()
   }
 
@@ -26,31 +43,11 @@ export abstract class Plot extends EE {
   }
 
   private getSpecOptions() {
-    return {
-      type: "interval",
-      autoFit: true,
-      data: [
-        { name: "London", 月份: "Jan.", 月均降雨量: 18.9 },
-        { name: "London", 月份: "Feb.", 月均降雨量: 28.8 },
-        { name: "London", 月份: "Mar.", 月均降雨量: 39.3 },
-        { name: "London", 月份: "Apr.", 月均降雨量: 81.4 },
-        { name: "London", 月份: "May", 月均降雨量: 47 },
-        { name: "London", 月份: "Jun.", 月均降雨量: 20.3 },
-        { name: "London", 月份: "Jul.", 月均降雨量: 24 },
-        { name: "London", 月份: "Aug.", 月均降雨量: 35.6 },
-        { name: "Berlin", 月份: "Jan.", 月均降雨量: 12.4 },
-        { name: "Berlin", 月份: "Feb.", 月均降雨量: 23.2 },
-        { name: "Berlin", 月份: "Mar.", 月均降雨量: 34.5 },
-        { name: "Berlin", 月份: "Apr.", 月均降雨量: 99.7 },
-        { name: "Berlin", 月份: "May", 月均降雨量: 52.6 },
-        { name: "Berlin", 月份: "Jun.", 月均降雨量: 35.5 },
-        { name: "Berlin", 月份: "Jul.", 月均降雨量: 37.4 },
-        { name: "Berlin", 月份: "Aug.", 月均降雨量: 42.4 },
-      ],
-      encode: { x: "月份", y: "月均降雨量", color: "name" },
-      transform: [{ type: "stackY" }],
-      interaction: { elementHighlight: { background: true } },
-    }
+    return this.options
+  }
+
+  protected mergeOption(options: Partial<O>) {
+    return mergeWithArrayCoverage({}, options);
   }
 
   public render() {
