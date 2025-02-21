@@ -1,4 +1,4 @@
-import type { BarOptions } from "./types"
+import type { BarOptions } from "./type"
 
 import { Plot } from "../../core"
 import { DEFAULT_OPTIONS } from "./constants"
@@ -11,5 +11,4 @@ export class Bar extends Plot<BarOptions> {
   protected getDefaultOptions() {
     return Bar.getDefaultOptions()
   }
-
 }

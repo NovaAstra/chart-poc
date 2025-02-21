@@ -19,11 +19,11 @@ export abstract class Plot<
     this.chart = new Chart(this.getChartOptions());
   }
 
-  private getChartOptions(): Options {
+  private getChartOptions() {
     return {
       ...pick(this.options, CHART_OPTIONS),
       container: this.container
-    } as Options
+    }
   }
 
   public render(options?: Spec) {
