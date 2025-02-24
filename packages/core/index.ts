@@ -1,6 +1,7 @@
 import type {
   Chart,
-  ChartOptions
+  ChartOptions,
+  G2Spec
 } from "@antv/g2"
 
 import EE from '@antv/event-emitter';
@@ -14,11 +15,9 @@ const SOURCE_ATTRIBUTE_NAME = 'data-chart-source-type';
 
 export const G2Chart = extend(Runtime, { ...stdlib(), ...plotlib() });
 
-export type Options = {
+export type Options = G2Spec & {
   container: string | HTMLElement;
 }
-
-const override = (options: Options) => options
 
 export abstract class Adaptor<O extends Options> {
   public abstract applyOptions(plot: Plot<O>): O;
@@ -69,7 +68,6 @@ export abstract class Plot<O extends Options> extends EE {
 
     const { container } = options
     this.container = typeof container === 'string' ? document.getElementById(container) : container;
-    this.options = override(options) as O
     this.adaptor = adaptor
 
     this.createG2()
